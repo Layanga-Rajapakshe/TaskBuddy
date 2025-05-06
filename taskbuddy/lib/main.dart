@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:taskbuddy/addTask.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskbuddy/task.dart';
+import 'package:device_preview/device_preview.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    DevicePreview(
+    enabled: true,
+    builder: (context) => const MyApp(), // Wrap your app
+  ),
+    );
 }
 
 class MyApp extends StatelessWidget {
@@ -93,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: 
                     List.generate(
                       10,
-                      (index) => Task(),
+                      (index) => Task(taskName: "Sample Task $index"),
                       )
                 )
               ],
