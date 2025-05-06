@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskbuddy/addTask.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:taskbuddy/task.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,6 +32,7 @@ class MyApp extends StatelessWidget {
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
+        textTheme: GoogleFonts.numansTextTheme(),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: "Task Buddy"),
@@ -64,29 +67,37 @@ class _MyHomePageState extends State<MyHomePage> {
     double screenWidth = MediaQuery. of(context). size. width;
 
     return Scaffold(
-      body: Container(
-        color: Colors.black,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              SizedBox(
-                height: screenHeight * 0.2,
-              ),
-                Flexible(
-                child: Text(
-                  "Task Buddy",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: screenWidth * 0.2,
+      body: SingleChildScrollView(
+        child: Container(
+          color: Colors.black,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: screenHeight * 0.06),
+                    child: Text(
+                      "Task Buddy",
+                      style: GoogleFonts.numans(
+                        color: Colors.white,
+                        fontSize: screenWidth * 0.2,
+                        height: 1.0,
+                      ),
+                      softWrap: true,
+                    ),
                   ),
-                  softWrap: true,
+                SizedBox(
+                  height: screenHeight * 0.1,
                 ),
-              ),
-              SizedBox(
-                height: screenHeight * 0.2,
-              ),
-            ],
+                Column(
+                  children: 
+                    List.generate(
+                      10,
+                      (index) => Task(),
+                      )
+                )
+              ],
+            ),
           ),
         ),
       ),

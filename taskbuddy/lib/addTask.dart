@@ -18,6 +18,9 @@ class _AddTaskState extends State<AddTask> {
             color: Colors.white,
           ),
         ),
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         backgroundColor: Colors.black,
       ),
       body: Container(
