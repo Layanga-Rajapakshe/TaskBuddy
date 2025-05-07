@@ -79,6 +79,38 @@ class _MyHomePageState extends State<MyHomePage> {
       tasks = prefs.getStringList('tasks') ?? [];
   }
 
+  Future deleteTask(int index) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    tasks.removeAt(index);
+    await prefs.setStringList('tasks', tasks);
+  }
+
+  Widget list(){
+    return ListView.builder(
+      itemCount: tasks.length,
+      itemBuilder: (BuildContext context, int index){
+        return row(context, index);
+      },
+    );
+  }
+
+  Widget row(BuildContext context, int index){
+    return Dismissible(
+      key: Key(tasks[index]),
+      child: Task(taskName: tasks[index]),
+      onDismissed: (direction) {
+        deleteTask(index);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("${tasks[index]} deleted"),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+        getTasks();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -86,6 +118,9 @@ class _MyHomePageState extends State<MyHomePage> {
     double screenWidth = MediaQuery. of(context). size. width;
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+      ),
       body: SingleChildScrollView(
         child: Container(
           color: Colors.black,
@@ -108,11 +143,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 SizedBox(
                   height: screenHeight * 0.1,
                 ),
-                Column(
-                  children: tasks.map((task) {
-                    return Task(taskName: task);
-                  }).toList(),
-                )
+                SizedBox(
+                  height: screenHeight * 0.5, // or any height based on your layout
+                  child: list(),
+                ),
               ],
             ),
           ),
@@ -126,9 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context) => const AddTask()
               )
             );
-            setState(() {
-              getTasks();
-            });
+            getTasks();
         },
         backgroundColor: Colors.black,
         shape: const CircleBorder(),
