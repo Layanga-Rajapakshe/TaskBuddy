@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskbuddy/addTask.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskbuddy/task.dart';
@@ -7,7 +8,7 @@ import 'package:device_preview/device_preview.dart';
 void main() {
   runApp(
     DevicePreview(
-    enabled: true,
+    enabled: false,
     builder: (context) => const MyApp(), // Wrap your app
   ),
     );
@@ -65,6 +66,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<String> tasks = [];
+
+  @override
+  void initState(){
+    super.initState();
+    getTasks();
+  }
+
+  Future getTasks()  async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      tasks = prefs.getStringList('tasks') ?? [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,11 +109,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: screenHeight * 0.1,
                 ),
                 Column(
-                  children: 
-                    List.generate(
-                      10,
-                      (index) => Task(taskName: "Sample Task $index"),
-                      )
+                  children: tasks.map((task) {
+                    return Task(taskName: task);
+                  }).toList(),
                 )
               ],
             ),
@@ -109,7 +120,15 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton.large(
         onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddTask()));
+          Navigator.push(
+            context, 
+            MaterialPageRoute(
+              builder: (context) => const AddTask()
+              )
+            );
+            setState(() {
+              getTasks();
+            });
         },
         backgroundColor: Colors.black,
         shape: const CircleBorder(),
