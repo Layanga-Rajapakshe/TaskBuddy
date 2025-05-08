@@ -76,13 +76,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future getTasks()  async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      tasks = prefs.getStringList('tasks') ?? [];
+      setState(() {
+        tasks = prefs.getStringList('tasks') ?? [];
+      });
   }
 
   Future deleteTask(int index) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     tasks.removeAt(index);
     await prefs.setStringList('tasks', tasks);
+    setState((){});
   }
 
   Widget list(){
@@ -99,10 +102,11 @@ class _MyHomePageState extends State<MyHomePage> {
       key: Key(tasks[index]),
       child: Task(taskName: tasks[index]),
       onDismissed: (direction) {
+        String task = tasks[index];
         deleteTask(index);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("${tasks[index]} deleted"),
+            content: Text("$task deleted"),
             duration: const Duration(seconds: 1),
           ),
         );
@@ -153,8 +157,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton.large(
-        onPressed: (){
-          Navigator.push(
+        onPressed: () async {
+          await Navigator.push(
             context, 
             MaterialPageRoute(
               builder: (context) => const AddTask()
