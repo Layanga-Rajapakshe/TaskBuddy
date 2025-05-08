@@ -100,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget row(BuildContext context, int index){
     return Dismissible(
       key: Key(tasks[index]),
-      child: Task(taskName: tasks[index]),
+      child: Task(taskName: tasks[index], index: index),
       onDismissed: (direction) {
         String task = tasks[index];
         deleteTask(index);
