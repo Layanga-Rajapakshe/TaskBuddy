@@ -107,7 +107,14 @@ class _MyHomePageState extends State<MyHomePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("$task deleted"),
-            duration: const Duration(seconds: 1),
+            action: SnackBarAction(
+              label: 'Undo', 
+              onPressed: (){
+                tasks.add(task);
+                setState(() {});
+              }
+            ),
+            duration: const Duration(seconds: 2),
           ),
         );
         getTasks();
