@@ -10,6 +10,8 @@ class AddTask extends StatefulWidget {
 
 class _AddTaskState extends State<AddTask> {
   TextEditingController taskController = TextEditingController();
+  DateTime? selectedDate;
+  TimeOfDay? startTime, endTime;
 
   Future _addTask (String task) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -35,10 +37,10 @@ class _AddTaskState extends State<AddTask> {
         iconTheme:const IconThemeData(
           color: Colors.black,
         ),
-        backgroundColor: Color.fromARGB(255, 246, 238, 201),
+        backgroundColor: const Color.fromARGB(255, 246, 238, 201),
       ),
       body: Container(
-        color: Color.fromARGB(255, 246, 238, 201),
+        color: const Color.fromARGB(255, 246, 238, 201),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Container(
@@ -61,6 +63,78 @@ class _AddTaskState extends State<AddTask> {
                   ),
                   style: const TextStyle(
                     color: Colors.black,
+                  ),
+                ),
+                SizedBox(
+                  height: screenHeight * 0.05,
+                ),
+                TextField(
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    hintText: "Select Date",
+                    suffixIcon: IconButton(
+                      onPressed: () async {
+                        selectedDate = await showDatePicker(
+                          context: context, 
+                          firstDate: DateTime(2000), 
+                          lastDate: DateTime(2100),
+                          initialDate: DateTime.now(),
+                        );
+                      }, 
+                      icon: const Icon(Icons.calendar_month_rounded)
+                    )
+                  )
+                ),
+                SizedBox(
+                  height: screenHeight * 0.05,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          hintText: "Start Time...",
+                          suffixIcon: IconButton(
+                            onPressed: () async {
+                              startTime = await showTimePicker(
+                                context: context, 
+                                initialTime: TimeOfDay.now()
+                              );
+                            }, 
+                            icon: Icon(Icons.access_time),
+                          )
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: screenWidth * 0.05,
+                    ),
+                    Expanded(
+                      child: TextField(
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          hintText: "End Time...",
+                          suffixIcon: IconButton(
+                            onPressed: () async {
+                              endTime = await showTimePicker(
+                                context: context, 
+                                initialTime: TimeOfDay.now()
+                              );
+                            }, 
+                            icon: Icon(Icons.access_time),
+                          )
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: screenHeight * 0.05,
+                ),
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: "Enter Description...",
                   ),
                 ),
                 SizedBox(
