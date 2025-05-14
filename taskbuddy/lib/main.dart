@@ -89,12 +89,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget list(){
+    if (tasks.length == 0) {
+      return Text(
+        "No Current Tasks. Add New Task To See Here..."
+      );
+    }else{
     return ListView.builder(
       itemCount: tasks.length,
       itemBuilder: (BuildContext context, int index){
         return row(context, index);
       },
     );
+    }
   }
 
   Widget row(BuildContext context, int index){

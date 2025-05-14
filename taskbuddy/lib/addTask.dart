@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taskbuddy/task.dart';
 
 class AddTask extends StatefulWidget {
   const AddTask({super.key});
@@ -9,14 +14,17 @@ class AddTask extends StatefulWidget {
 }
 
 class _AddTaskState extends State<AddTask> {
-  TextEditingController taskController = TextEditingController();
+  TextEditingController taskController1 = TextEditingController();
+  TextEditingController taskController2 = TextEditingController();
+
   DateTime? selectedDate;
   TimeOfDay? startTime, endTime;
 
-  Future _addTask (String task) async {
+  Future _addTask (Task task) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? tasks = prefs.getStringList('tasks') ?? [];
-    tasks.add(task);
+    String taskJson = jsonEncode(task.toMap());
+    tasks.add(taskJson);
     await prefs.setStringList('tasks', tasks);
     print(tasks);
   }
@@ -49,7 +57,7 @@ class _AddTaskState extends State<AddTask> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 TextField(
-                  controller: taskController,
+                  controller: taskController1,
                   decoration: const InputDecoration(
                     hintText: "Enter Task...",
                     hintStyle: TextStyle(
@@ -133,6 +141,7 @@ class _AddTaskState extends State<AddTask> {
                   height: screenHeight * 0.05,
                 ),
                 TextField(
+                  controller: taskController2,
                   decoration: InputDecoration(
                     hintText: "Enter Description...",
                   ),
@@ -142,8 +151,18 @@ class _AddTaskState extends State<AddTask> {
                 ),
                 ElevatedButton(
                   onPressed: (){
-                    String task = taskController.text;
-                    if(task.isNotEmpty){
+                    String taskName = taskController1.text;
+                    String description = taskController2.text;
+                    int index = Random().nextInt(10); // Generates a random integer between 0 and 999
+                    if(taskName.isNotEmpty && description.isNotEmpty){
+                      Task task = Task(
+                        taskName: taskName, 
+                        index: index, dueDate: 
+                        selectedDate ?? DateTime.now(), 
+                        startTime: startTime ?? TimeOfDay.now(), 
+                        endTime: endTime ?? TimeOfDay.now(), 
+                        description: description
+                      );
                       _addTask(task);
                       Navigator.pop(context);
                     }else{
