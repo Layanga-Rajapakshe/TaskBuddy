@@ -20,7 +20,7 @@ class _TaskState extends State<Task> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(16),
       margin: EdgeInsets.only(top: screenHeight * 0.02),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(screenWidth * 0.075),
@@ -32,10 +32,60 @@ class _TaskState extends State<Task> {
                     ? Color.fromARGB(255, 235, 121, 83)
                     : Color.fromARGB(255, 247, 213, 76),
       ),
-      height: screenHeight * 0.1,
       width: screenWidth * 0.9,
       child: Row(
         children: [
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.taskName,  
+                  style: GoogleFonts.numans(
+                    color: Colors.black,
+                    fontSize: screenWidth * 0.07,
+                    fontWeight: FontWeight.bold,
+                    height: 1.0,
+                    decoration: status ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+                SizedBox(
+                  height: screenHeight * 0.02,
+                ),
+                FittedBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.calendar_month),
+                      Text(
+                        "2024/05/05",
+                      ),
+                      SizedBox(
+                        width: screenWidth * 0.05,
+                      ),
+                      Icon(Icons.access_time),
+                      Text(
+                        "From: 12.05"
+                      ),
+                      Text(
+                    "To: 05:05"
+                    )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: screenHeight * 0.02,
+                ),
+                Text(
+                  "Here is the description",
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.04
+                  ),
+                )
+              ],
+            ),
+          ),
           Checkbox(
             value: status,
             onChanged: (value) {
@@ -43,15 +93,6 @@ class _TaskState extends State<Task> {
                 status = value!;
               });
             },
-          ),
-          Text(
-            widget.taskName,  
-            style: GoogleFonts.numans(
-              color: Colors.black,
-              fontSize: screenWidth * 0.05,
-              height: 1.0,
-              decoration: status ? TextDecoration.lineThrough : null,
-            ),
           ),
         ],
       ),

@@ -130,11 +130,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: const Color.fromARGB(255, 246, 238, 201),
       ),
       body: SingleChildScrollView(
         child: Container(
-          color: Colors.black,
+          color: const Color.fromARGB(255, 246, 238, 201),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -144,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Text(
                       "Task Buddy",
                       style: GoogleFonts.numans(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: screenWidth * 0.2,
                         height: 1.0,
                       ),
