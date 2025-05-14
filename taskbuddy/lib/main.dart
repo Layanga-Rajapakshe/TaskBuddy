@@ -1,15 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskbuddy/addTask.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskbuddy/task.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:taskbuddy/taskTile.dart' as taskTile;
 
 void main() {
   runApp(
     DevicePreview(
     enabled: false,
-    builder: (context) => const MyApp(), // Wrap your app
+    builder: (context) => const MyApp(), 
   ),
     );
 }
@@ -17,27 +20,11 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Task Buddy',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         textTheme: GoogleFonts.numansTextTheme(),
         useMaterial3: true,
@@ -50,15 +37,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -66,7 +44,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<String> tasks = [];
+  List<Task> tasks = [];
 
   @override
   void initState(){
@@ -74,53 +52,82 @@ class _MyHomePageState extends State<MyHomePage> {
     getTasks();
   }
 
-  Future getTasks()  async {
+  Future getTasks() async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> tasksJsonList = prefs.getStringList('tasks') ?? [];
+
       setState(() {
-        tasks = prefs.getStringList('tasks') ?? [];
+        tasks = tasksJsonList.map((taskJson){
+          Map<String, dynamic> taskMap = jsonDecode(taskJson);
+          return Task.fromMap(taskMap);
+        }).toList();
       });
+      
+      // Debug - Print tasks after loading
+      print("Loaded ${tasks.length} tasks: $tasks");
+      for (var task in tasks) {
+        print("Task: ${task.taskName}, Date: ${task.dueDate}, Start: ${task.startTime}, End: ${task.endTime}");
+      }
   }
 
   Future deleteTask(int index) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     tasks.removeAt(index);
-    await prefs.setStringList('tasks', tasks);
+    await prefs.setStringList('tasks', tasks.map((task) => jsonEncode(task.toMap())).toList());
     setState((){});
   }
 
   Widget list(){
-    if (tasks.length == 0) {
-      return Text(
-        "No Current Tasks. Add New Task To See Here..."
+    if (tasks.isEmpty) {
+      return const Center(
+        child: Text(
+          "No Current Tasks. Add New Task To See Here...",
+          textAlign: TextAlign.center,
+        ),
       );
-    }else{
-    return ListView.builder(
-      itemCount: tasks.length,
-      itemBuilder: (BuildContext context, int index){
-        return row(context, index);
-      },
-    );
+    } else {
+      return ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: tasks.length,
+        itemBuilder: (BuildContext context, int index){
+          return row(context, index);
+        },
+      );
     }
   }
 
   Widget row(BuildContext context, int index){
     return Dismissible(
-      key: Key(tasks[index]),
-      child: Task(taskName: tasks[index], index: index),
+      key: Key("task-${tasks[index].index}-${DateTime.now().millisecondsSinceEpoch}"),
+      child: taskTile.Tasktile(task: tasks[index]),
+      confirmDismiss: (direction) async {
+      return await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Confirm Delete"),
+            content: const Text("Are you sure you want to delete this task?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("Cancel"),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text("Delete"),
+              ),
+            ],
+          );
+        },
+      );
+    },
       onDismissed: (direction) {
-        String task = tasks[index];
         deleteTask(index);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("$task deleted"),
-            action: SnackBarAction(
-              label: 'Undo', 
-              onPressed: (){
-                tasks.add(task);
-                setState(() {});
-              }
-            ),
-            duration: const Duration(seconds: 2),
+            content: const Text("Task deleted"),
+            duration: const Duration(seconds: 1),
           ),
         );
         getTasks();
@@ -130,9 +137,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
-    double screenHeight = MediaQuery. of(context). size. height;
-    double screenWidth = MediaQuery. of(context). size. width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
@@ -161,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: screenHeight * 0.1,
                 ),
                 SizedBox(
-                  height: screenHeight * 0.5, // or any height based on your layout
+                  height: screenHeight * 0.5,
                   child: list(),
                 ),
               ],
@@ -175,15 +181,15 @@ class _MyHomePageState extends State<MyHomePage> {
             context, 
             MaterialPageRoute(
               builder: (context) => const AddTask()
-              )
-            );
-            getTasks();
+            )
+          );
+          getTasks();
         },
         backgroundColor: Colors.black,
         shape: const CircleBorder(),
         child: const Icon(
           Icons.add,
-          color:  Colors.white,
+          color: Colors.white,
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

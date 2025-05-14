@@ -16,6 +16,9 @@ class AddTask extends StatefulWidget {
 class _AddTaskState extends State<AddTask> {
   TextEditingController taskController1 = TextEditingController();
   TextEditingController taskController2 = TextEditingController();
+  TextEditingController dateController = TextEditingController();
+  TextEditingController startTimeController = TextEditingController();
+  TextEditingController endTimeController = TextEditingController();
 
   DateTime? selectedDate;
   TimeOfDay? startTime, endTime;
@@ -77,6 +80,7 @@ class _AddTaskState extends State<AddTask> {
                   height: screenHeight * 0.05,
                 ),
                 TextField(
+                  controller: dateController,
                   readOnly: true,
                   decoration: InputDecoration(
                     hintText: "Select Date",
@@ -88,6 +92,11 @@ class _AddTaskState extends State<AddTask> {
                           lastDate: DateTime(2100),
                           initialDate: DateTime.now(),
                         );
+                        if (selectedDate != null) {
+                          setState(() {
+                            dateController.text = "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}";
+                          });
+                        }
                       }, 
                       icon: const Icon(Icons.calendar_month_rounded)
                     )
@@ -100,6 +109,7 @@ class _AddTaskState extends State<AddTask> {
                   children: [
                     Expanded(
                       child: TextField(
+                        controller: startTimeController,
                         readOnly: true,
                         decoration: InputDecoration(
                           hintText: "Start Time...",
@@ -109,6 +119,11 @@ class _AddTaskState extends State<AddTask> {
                                 context: context, 
                                 initialTime: TimeOfDay.now()
                               );
+                              if (startTime != null) {
+                                setState(() {
+                                  startTimeController.text = startTime!.format(context);
+                                });
+                              }
                             }, 
                             icon: Icon(Icons.access_time),
                           )
@@ -120,6 +135,7 @@ class _AddTaskState extends State<AddTask> {
                     ),
                     Expanded(
                       child: TextField(
+                        controller: endTimeController,
                         readOnly: true,
                         decoration: InputDecoration(
                           hintText: "End Time...",
@@ -129,6 +145,11 @@ class _AddTaskState extends State<AddTask> {
                                 context: context, 
                                 initialTime: TimeOfDay.now()
                               );
+                              if (endTime != null) {
+                                setState(() {
+                                  endTimeController.text = endTime!.format(context);
+                                });
+                              }
                             }, 
                             icon: Icon(Icons.access_time),
                           )
@@ -153,7 +174,7 @@ class _AddTaskState extends State<AddTask> {
                   onPressed: (){
                     String taskName = taskController1.text;
                     String description = taskController2.text;
-                    int index = Random().nextInt(10); // Generates a random integer between 0 and 999
+                    int index = Random().nextInt(10); 
                     if(taskName.isNotEmpty && description.isNotEmpty){
                       Task task = Task(
                         taskName: taskName, 
