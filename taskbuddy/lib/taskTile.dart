@@ -53,7 +53,7 @@ class Tasktile extends StatelessWidget {
                 ),
                 Text(
                   _formatDate(task.dueDate),
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 14.0,
                   ),
@@ -72,7 +72,7 @@ class Tasktile extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Icon(
+                const Icon(
                   Icons.access_time,
                   size: 16.0,
                   color: Colors.black,
@@ -80,7 +80,7 @@ class Tasktile extends StatelessWidget {
                 const SizedBox(width: 4.0),
                 Text(
                   '${_formatTimeOfDay(task.startTime)} - ${_formatTimeOfDay(task.endTime)}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 14.0,
                   ),

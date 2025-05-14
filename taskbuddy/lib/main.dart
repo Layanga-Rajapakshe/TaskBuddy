@@ -63,11 +63,6 @@ class _MyHomePageState extends State<MyHomePage> {
         }).toList();
       });
       
-      // Debug - Print tasks after loading
-      print("Loaded ${tasks.length} tasks: $tasks");
-      for (var task in tasks) {
-        print("Task: ${task.taskName}, Date: ${task.dueDate}, Start: ${task.startTime}, End: ${task.endTime}");
-      }
   }
 
   Future deleteTask(int index) async {
@@ -125,9 +120,9 @@ class _MyHomePageState extends State<MyHomePage> {
       onDismissed: (direction) {
         deleteTask(index);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text("Task deleted"),
-            duration: const Duration(seconds: 1),
+          const SnackBar(
+            content: Text("Task deleted"),
+            duration: Duration(seconds: 1),
           ),
         );
         getTasks();
