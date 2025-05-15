@@ -47,7 +47,6 @@ class _AddTaskState extends State<AddTask> {
         iconTheme:const IconThemeData(
           color: Colors.black,
         ),
-        backgroundColor: const Color.fromARGB(255, 246, 238, 201),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

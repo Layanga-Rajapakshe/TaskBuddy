@@ -136,12 +136,8 @@ class _MyHomePageState extends State<MyHomePage> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 246, 238, 201),
-      ),
       body: SingleChildScrollView(
         child: Container(
-          color: const Color.fromARGB(255, 246, 238, 201),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
